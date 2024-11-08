@@ -78,5 +78,24 @@ public class UserRepositoryTests {
         assertThat(userByEmail).isNotNull();
 
     }
+    @Test
+    public void testCountById(){
+        Integer id = 1;
+        Long aLong = repo.countById(id);
+        assertThat(aLong).isNotNull().isGreaterThan(0);
+    }
+    @Test
+    public void testDisableUser() {
+        Integer id = 1;
+        repo.updateEnabledStatus(id, false);
+
+    }
+
+    @Test
+    public void testEnableUser() {
+        Integer id = 3;
+        repo.updateEnabledStatus(id, false);
+
+    }
 
 }

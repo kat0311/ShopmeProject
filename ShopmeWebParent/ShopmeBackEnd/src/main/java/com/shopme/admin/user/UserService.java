@@ -5,12 +5,14 @@ import com.shopme.common.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UserService {
     @Autowired
     private UserRepository userRepo;
@@ -68,5 +70,19 @@ public class UserService {
         }
 
     }
+    public void delete(Integer id) throws UserNotFoundException {
+        Long aLong = userRepo.countById(id);
+        if (aLong==null||aLong==0){
+            throw new UserNotFoundException("Could not find any user with id"+id);
+        }else{
+            userRepo.deleteById(id);
+        }
+
+    }
+    public void updateUserEnabledStatus(Integer id, boolean enabled) {
+        userRepo.updateEnabledStatus(id, enabled);
+    }
+
+
 
 }
