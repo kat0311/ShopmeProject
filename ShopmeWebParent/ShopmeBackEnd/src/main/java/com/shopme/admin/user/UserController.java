@@ -3,6 +3,7 @@ package com.shopme.admin.user;
 import java.io.IOException;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
@@ -31,10 +32,10 @@ public class UserController {
     }
 
     @GetMapping("/users/page/{pageNum}")
-    public String listByPage(@PathVariable(name = "pageNum") int pageNum, Model model,
-                             @RequestParam("sortField") String sortField,
-                             @RequestParam("sortDir") String sortDir,
-                             @RequestParam("keyword") String keyword) {
+    public String listByPage(@PathVariable(name = "pageNum",required = false) int pageNum, Model model,
+                             @RequestParam(name="sortField",required = false) String sortField,
+                             @RequestParam(name="sortDir",required = false) String sortDir,
+                             @RequestParam(name = "keyword",required = false) String keyword) {
         Page<User> page = service.listByPage(pageNum,sortField,sortDir,keyword);
         List<User> listUsers = page.getContent();
 
@@ -86,8 +87,14 @@ public class UserController {
             service.save(user);
         }
 
-        redirectAttributes.addFlashAttribute("message", "The User has been saved Successfully!");
-        return "redirect:/users";
+
+        redirectAttributes.addFlashAttribute("message", "The user has been saved successfully.");
+
+        return getRedirectURLtoAffectedUser(user);
+    }
+    private String getRedirectURLtoAffectedUser(User user) {
+        String firstPartOfEmail = user.getEmail().split("@")[0];
+        return "redirect:/users/page/1?sortField=id&sortDir=asc&keyword=" + firstPartOfEmail;
     }
 
     @GetMapping("/users/edit/{id}")
@@ -129,5 +136,11 @@ public class UserController {
         String message = "The user id "+id+" has been "+status;
         redirectAttributes.addFlashAttribute("message",message);
         return "redirect:/users";
+    }
+    @GetMapping("/users/export/csv")
+    public void exportToCSV(HttpServletResponse response) throws IOException {
+        List<User> listUsers = service.listAll();
+        UserCsvExporter exporter = new UserCsvExporter();
+        exporter.export(listUsers, response);
     }
 }
