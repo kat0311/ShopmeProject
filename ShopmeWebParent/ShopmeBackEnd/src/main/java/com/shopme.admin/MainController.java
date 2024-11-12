@@ -10,6 +10,10 @@ public class MainController {  // 这里需要加上 'class'
     public String viewHomePage() {
         return "index";  // 返回视图名称
     }
+    @GetMapping("/login")
+    public String viewLoginPage() {
+        return "login";
+    }
 
 }
 
