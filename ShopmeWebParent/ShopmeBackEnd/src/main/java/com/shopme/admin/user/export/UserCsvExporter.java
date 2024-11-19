@@ -1,4 +1,5 @@
-package com.shopme.admin.user;
+package com.shopme.admin.user.export;
+
 
 import com.shopme.common.entity.User;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class UserCsvExporter extends AbstractExporter{
+public class UserCsvExporter extends AbstractExporter {
     public void export(List<User> listUsers, HttpServletResponse response) throws IOException {
         super.setResponseHeader(response,"test/csv",".csv");
 

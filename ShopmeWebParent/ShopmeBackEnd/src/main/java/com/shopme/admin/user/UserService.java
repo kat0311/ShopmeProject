@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.Optional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,6 +24,9 @@ public class UserService {
     private RoleRepository roleRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    public User getByEmail(String email) {
+        return userRepo.getUserByEmail(email);
+    }
     public List<User> listAll(){
         return (List<User>) userRepo.findAll(Sort.by("firstName").ascending());
     }
@@ -53,6 +56,23 @@ public class UserService {
         }
 
         return userRepo.save(user);
+    }
+    public User updateAccount(User userInForm) {
+        User userInDB = userRepo.findById(userInForm.getId()).get();
+
+        if (!userInForm.getPassword().isEmpty()) {
+            userInDB.setPassword(userInForm.getPassword());
+            encodePassword(userInDB);
+        }
+
+        if (userInForm.getPhotos() != null) {
+            userInDB.setPhotos(userInForm.getPhotos());
+        }
+
+        userInDB.setFirstName(userInForm.getFirstName());
+        userInDB.setLastName(userInForm.getLastName());
+
+        return userRepo.save(userInDB);
     }
     private void encodePassword(User user){
         String encode = passwordEncoder.encode(user.getPassword());
